@@ -1,0 +1,93 @@
+clear
+###--- include init.mod ---
+include  init.mod
+
+#--- redefine pair interaction to enable larger cutoff
+
+pair_style    lj/cut  5.0
+pair_coeff    *  *  0.01  0.7
+special_bonds    lj  0.1  0.1  0.1
+
+neighbor    0.1  bin
+
+#--- fake run ----
+
+timestep  0.01
+
+fix    1   all   nve
+
+run 0
+
+unfix  1
+#------------------
+
+### modify this value based on your trajactory
+
+variable nfreq     equal   1000000
+
+variable first     equal   65000000
+
+variable last      equal   70000000
+
+variable duration  equal   ${last}-${first}
+
+variable nrepeat   equal   ${duration}/${nfreq}
+
+#--- set thermo output style to log. -------
+
+thermo_style    custom    step  temp  press  etotal  epair  etotal
+
+thermo   ${nfreq}
+
+#--- group the atoms ---------------------
+group    W    type    7
+
+group    OH   type    6
+
+#group    all_W     union   W  OH
+
+group    B    type    1
+
+group    S    type    2
+
+group    styrene    union  B  S
+
+group    E    type    3
+
+group    T    type    4
+
+group    N    type    5 # this is Ammonium
+
+group    ion  union  N  OH
+
+#--- W to W -----------------------
+compute W_rdf      W   rdf    100    * *
+
+fix     W_rdf      W   ave/time   ${nfreq}  ${nrepeat}  ${duration} &
+c_W_rdf[*]    file    W-W.rdf    mode    vector
+
+#--- styrene to styrene -------------------
+
+compute styrene_rdf  styrene   rdf    100    *  *
+
+fix     styrene_rdf      styrene   ave/time   ${nfreq}  ${nrepeat}  ${duration} &
+c_styrene_rdf[*]    file    styrene.rdf    mode    vector
+
+#--- E to E -------------------
+
+compute E_rdf  E   rdf    100    *  *
+
+fix     E_rdf    E   ave/time   ${nfreq}  ${nrepeat}  ${duration} &
+c_E_rdf[*]    file    E-E.rdf    mode    vector
+#--- anion to cation -------------------
+
+compute anion_cation_rdf  ion   rdf    100    5  6
+
+fix     anion_cation_rdf    ion   ave/time   ${nfreq}  ${nrepeat}  ${duration} &
+c_anion_cation_rdf[*]    file    anion-cation.rdf    mode    vector
+
+#--- rerun !!!---------------------------
+
+rerun    Last5_every1M.lammpstrj  first ${first} every ${nfreq} last ${last}    dump x y z    box yes
+
+
