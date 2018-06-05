@@ -1,0 +1,80 @@
+clear
+
+
+###--- include init.mod to get the topology and parameters---
+
+###---
+include  init.mod
+
+timestep   0.01
+
+fix    1   all   nve
+
+run 0
+
+unfix  1
+
+### modify this value based on your trajactory
+
+variable nfreq     equal   1000000
+
+variable first     equal   65000000
+
+variable last      equal   70000000 
+
+variable duration  equal   ${last}-${first}
+
+variable nrepeat   equal   ${duration}/${nfreq}
+
+#--- set thermo output style to log. -------
+
+thermo_style    custom    step  temp  press  etotal  epair  etotal
+
+thermo   ${nfreq}
+
+
+#--- group the W atoms ---------------------
+group    W    type    7
+
+group    OH   type    6
+
+#group    all_W     union   W  OH
+
+#--- compute cluster id --------------------
+
+compute  W_cluster  W   cluster/atom   1.0
+
+#--- save traj for all atoms -----
+
+dump     2    all    custom    ${nfreq}    updated_cluster_all.lammpstrj  &
+id    mol    type    element    q    x y z    ix iy iz    vx vy vz  c_W_cluster[0]
+
+dump_modify    2    element    B S E C N O W    sort id
+
+#--- save traj for selected atoms only ---
+
+dump     3    W      custom    ${nfreq}    W_cluster.lammpstrj  &
+id    c_W_cluster  type    element    q    x y z    ix iy iz    vx vy vz
+
+# here c_W_cluster and c_W_cluster[0] are the same. only one element in c_W_cluster for each atom.
+
+dump_modify    3    element    B S E C N O W    sort id
+
+#NOTE: replace 'c_W_cluster[0]' by 'mol' in the traj file  afterwards, then vmd can read.
+
+#--- save histogram of cluster size -----
+variable  number_total  equal count(all)
+variable  up_bound    equal    v_number_total+0.5
+
+fix    clst_id_histo  W  ave/histo  ${nfreq}  1  ${nfreq}  0.5  ${up_bound}  ${number_total}  c_W_cluster[*]  mode  vector  file  histo_W.dat 
+
+# Here, c_W_cluster[*] means all the element of this per-atom vector.
+# One can also use c_W_cluster instead, as the whole vector.
+#--- rerun !!!---------------------------
+
+rerun    Last5_every1M.lammpstrj    first ${first} every ${nfreq} last ${last}    dump x y z    box yes
+
+unfix  clst_id_histo
+
+#--- post prosessing --------------------
+# use the python script. 
