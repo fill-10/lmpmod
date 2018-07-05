@@ -46,10 +46,10 @@ compute  W_cluster  W   cluster/atom   1.0
 
 #--- save traj for all atoms -----
 
-dump     2    all    custom    ${nfreq}    updated_cluster_all.lammpstrj  &
-id    mol    type    element    q    x y z    ix iy iz    vx vy vz  c_W_cluster[0]
+# dump     2    all    custom    ${nfreq}    updated_cluster_all.lammpstrj  &
+# id    mol    type    element    q    x y z    ix iy iz    vx vy vz  c_W_cluster[0]
 
-dump_modify    2    element    B S E C N O W    sort id
+# dump_modify    2    element    B S E C N O W    sort id
 
 #--- save traj for selected atoms only ---
 
