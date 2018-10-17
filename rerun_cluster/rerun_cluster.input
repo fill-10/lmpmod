@@ -52,12 +52,7 @@ compute  W_cluster  W   cluster/atom   1.0
 # dump_modify    2    element    B S E C N O W    sort id
 
 #--- save traj for selected atoms only ---
-# NOTE: Must use the group id = all instead of group id =W.
-# Or, lammps could not have the cluster_id saved.
-# Guess that cluster_id is a per atom vector for all atoms, so you cannot omit some of them.
-# The result of only group id = W is that all rows of c_W_cluster are 0.
-
-dump     3    all      custom    ${nfreq}    W_cluster.lammpstrj  &
+dump     3    W      custom    ${nfreq}    W_cluster.lammpstrj  &
 id    c_W_cluster  type    element    q    x y z    ix iy iz    vx vy vz
 
 # here c_W_cluster and c_W_cluster[0] are the same. only one element in c_W_cluster for each atom.
