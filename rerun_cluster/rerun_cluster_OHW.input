@@ -52,6 +52,8 @@ id    mol    type    element    q    x y z    ix iy iz    vx vy vz  c_W_cluster[
 #dump_modify    2    element    B S E C I O W    sort id
 
 #--- save traj for selected atoms only ---
+# NOTE: sometimes only dumping OH_W does not save c_OH_W_cluster
+# c_OH_W_cluster is a per atom vector with the dimension of Natom.
 
 #dump     3    all      custom    ${nfreq}    W_cluster.lammpstrj  &
 id    c_W_cluster  type    q    x y z    ix iy iz   # vx vy vz
