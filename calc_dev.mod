@@ -50,11 +50,7 @@ fix box_den_2_avt  all ave/time ${nevery} ${nrepeat} ${nfreq}  v_boxden_2 ave wi
 fix thermo_H_avt  all ave/time ${nevery} ${nrepeat} ${nfreq}  v_thermo_H ave window ${Nblock}
 fix thermo_H_2_avt  all ave/time ${nevery} ${nrepeat} ${nfreq}  v_thermo_H_2 ave window ${Nblock}
 
-
-
-
 run ${nrun}
-
 
 
 ###------post-processing------###
@@ -134,11 +130,87 @@ variable thermo_H_stderr equal ${thermo_H_stddev}/sqrt(${Nblock})
 print "thermo_H_avt ${thermo_H_avt} +/- ${thermo_H_stddev} (${thermo_H_stderr}) " 
 
 
-
 print " "
 print "#######"
 print " "
 print " "
 
+###--- clean variables ---
 
+variable ker_avt    delete
+variable ker_2_avt  delete
+variable ker_stddev delete
+variable ker_stderr delete
+
+variable    per_avt delete
+variable  per_2_avt delete
+variable per_stddev delete
+variable per_stderr delete
+
+variable    etotalr_avt delete
+variable  etotalr_2_avt delete
+variable etotalr_stddev delete
+variable etotalr_stderr delete
+
+variable thermo_P_avt    delete
+variable thermo_P_2_avt  delete
+variable thermo_P_stddev delete
+variable thermo_P_stderr delete
+
+variable thermo_T_avt    delete
+variable thermo_T_2_avt  delete
+variable thermo_T_stddev delete
+variable thermo_T_stderr delete
+
+variable box_v_avt     delete
+variable box_v_2_avt   delete
+variable box_v_stddev  delete
+variable box_v_stderr  delete
+
+variable box_den_avt    delete
+variable box_den_2_avt  delete
+variable box_den_stddev delete
+variable box_den_stderr delete
+
+variable thermo_H_avt    delete
+variable thermo_H_2_avt  delete
+variable thermo_H_stddev delete
+variable thermo_H_stderr delete
+
+unfix  etotalr_avt
+unfix  etotalr_2_avt
+unfix  ker_avt
+unfix  ker_2_avt
+unfix  per_avt
+unfix  per_2_avt
+unfix  thermo_P_avt
+unfix  thermo_P_2_avt
+unfix  thermo_T_avt
+unfix  thermo_T_2_avt
+unfix  box_v_avt
+unfix  box_v_2_avt
+unfix  box_den_avt
+unfix  box_den_2_avt
+unfix  thermo_H_avt
+unfix  thermo_H_2_avt
+
+variable  etotalr        delete
+variable  etotalr_2      delete
+variable  ker_2          delete
+variable  per_2          delete
+variable  thermo_P       delete
+variable  thermo_P_2     delete
+variable  thermo_T       delete
+variable  thermo_T_2     delete
+variable  boxvol         delete
+variable  boxvol_2       delete
+variable  boxden         delete
+variable  boxden_2       delete
+variable  thermo_H       delete
+variable  thermo_H_2     delete
+
+uncompute  per 
+uncompute  ker
+uncompute  pe1
+uncompute  ke1
 
