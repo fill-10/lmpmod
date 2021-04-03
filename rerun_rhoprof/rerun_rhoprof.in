@@ -1,0 +1,30 @@
+clear
+
+include init.mod
+timestep 0.02
+fix 1 all nve
+run 0
+unfix 1
+variable nfreq equal 500000
+variable first equal 22000000
+variable last  equal 24000000
+variable duration equal ${last}-${first}
+variable nrepeat  equal ${duration}/${nfreq}
+
+##---------- Thermo monitor format ----------------
+
+thermo          100
+thermo_style    custom    step  temp   press  ke  pe  etotal  epair  ebond   density  
+
+
+##--- group W atoms ---
+group W type  7
+
+##--- compute density profile ---
+compute binchunk W chunk/atom bin/1d x lower 0.5 units box
+fix rho W ave/chunk ${nfreq} ${nrepeat} ${duration} binchunk density/number  file rhoW.dat
+
+##--- rerun !! --
+rerun  Prod4_every0d5M.lammpstrj  first ${first}  every ${nfreq} last ${last} dump x y z box yes
+
+
